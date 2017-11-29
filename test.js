@@ -1,4 +1,4 @@
-const { DB, Table, User } = require("../modelar2");
+const { DB, Table, User } = require("modelar");
 
 DB.init({
     type: "mysql",
