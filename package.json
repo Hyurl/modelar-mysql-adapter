@@ -1,0 +1,27 @@
+{
+    "name": "modelar-mysql-adapter",
+    "version": "0.1.0",
+    "description": "An adapter for Modelar to connect MySQL/Maria database.",
+    "main": "index.js",
+    "scripts": {
+        "test": "node test"
+    },
+    "keywords": [
+        "Modelar",
+        "MySQL",
+        "Adapter"
+    ],
+    "author": {
+        "name": "Ayon Lee",
+        "email": "i@hyurl.com",
+        "url": "hyurl.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/hyurl/modelar-mysql-adapter.git"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "mysql": "^2.15.0"
+    }
+}
