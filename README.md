@@ -2,6 +2,7 @@
 
 **This is an adapter for [Modelar](http://modelar.hyurl.com) to connect**
 **MySQL/Maria database.**
+
 (This module is internally included by Modelar, you don't have to download it
 before using it.)
 
