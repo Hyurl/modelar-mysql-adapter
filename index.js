@@ -59,8 +59,10 @@ class MysqlAdapter extends Adapter {
     }
 
     release() {
-        if (this.connection)
+        if (this.connection) {
             this.connection.release();
+            this.connection = null;
+        }
     }
 
     close() {
