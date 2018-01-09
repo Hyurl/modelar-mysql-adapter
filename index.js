@@ -1,5 +1,5 @@
 const mysql = require("mysql");
-const Adapter = require("modelar/Adapter");
+const { Adapter } = require("modelar");
 const Pools = {};
 
 class MysqlAdapter extends Adapter {
