@@ -25,37 +25,31 @@ class MysqlAdapter extends Adapter {
     }
 
     query(db, sql, bindings) {
-        if (this.connection === null) {
-            return this.connect(db).then(db => {
-                return this.query(db, sql, bindings);
-            });
-        } else {
-            return new Promise((resolve, reject) => {
-                this.connection.query({
-                    sql: sql,
-                    values: bindings,
-                    timeout: db._config.timeout,
-                }, (err, res) => {
-                    if (err) {
-                        reject(err);
+        return new Promise((resolve, reject) => {
+            this.connection.query({
+                sql: sql,
+                values: bindings,
+                timeout: db._config.timeout,
+            }, (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    if (res instanceof Array) {
+                        // Deal with select or pragma statements, they 
+                        // returns an array.
+                        db._data = res.map(row => {
+                            return Object.assign({}, row);
+                        });
                     } else {
-                        if (res instanceof Array) {
-                            // Deal with select or pragma statements, they 
-                            // returns an array.
-                            db._data = res.map(row => {
-                                return Object.assign({}, row);
-                            });
-                        } else {
-                            // Deal with other statements like insert/update/
-                            // delete.
-                            db.insertId = res.insertId;
-                            db.affectedRows = res.affectedRows;
-                        }
-                        resolve(db);
+                        // Deal with other statements like insert/update/
+                        // delete.
+                        db.insertId = res.insertId;
+                        db.affectedRows = res.affectedRows;
                     }
-                });
+                    resolve(db);
+                }
             });
-        }
+        });
     }
 
     release() {
@@ -70,7 +64,7 @@ class MysqlAdapter extends Adapter {
             this.connection.destroy();
     }
 
-    closeAll() {
+    static close() {
         for (let i in Pools) {
             Pools[i].end();
             delete Pools[i];
@@ -97,9 +91,10 @@ class MysqlAdapter extends Adapter {
                 autoIncrement = " auto_increment=" + field.autoIncrement[0];
             }
             if (field.length instanceof Array) {
-                field.length = field.length.join(",");
+                field.type += "(" + field.length.join(",") + ")";
+            } else if (field.length) {
+                field.type += "(" + field.length + ")";
             }
-            field.type += "(" + field.length + ")";
 
             let column = table.backquote(field.name) + " " + field.type;
 
@@ -146,9 +141,7 @@ class MysqlAdapter extends Adapter {
         else
             sql += " engine=InnoDB";
 
-        sql += ` default charset=${table._config.charset}` + autoIncrement;
-
-        return sql;
+        return sql + ` default charset=${table._config.charset}` + autoIncrement;
     }
 
     /** Methods for Query */
@@ -159,4 +152,4 @@ class MysqlAdapter extends Adapter {
     }
 }
 
-module.exports = new MysqlAdapter;
+module.exports = MysqlAdapter;
