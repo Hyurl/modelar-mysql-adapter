@@ -1,7 +1,7 @@
 # Modelar-MySQL-Adapter
 
-**This is an adapter for [Modelar](http://modelar.hyurl.com) to connect**
-**MySQL/Maria database.**
+**This is an adapter for [Modelar](https://github.com/hyurl/modelar) to**
+**connect MySQL/Maria database.**
 
 (This module is internally included by Modelar, you don't have to download it
 before using it.)
