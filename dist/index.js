@@ -35,8 +35,6 @@ class MysqlAdapter extends modelar_1.Adapter {
                 }
                 else {
                     if (res instanceof Array) {
-                        // Deal with select or pragma statements, they 
-                        // returns an array.
                         let data = [];
                         for (let row of res) {
                             data.push(Object.assign({}, row));
@@ -44,8 +42,6 @@ class MysqlAdapter extends modelar_1.Adapter {
                         db.data = data;
                     }
                     else {
-                        // Deal with other statements like insert/update/
-                        // delete.
                         db.insertId = res.insertId;
                         db.affectedRows = res.affectedRows;
                     }
@@ -72,13 +68,12 @@ class MysqlAdapter extends modelar_1.Adapter {
             delete MysqlAdapter.Pools[i];
         }
     }
-    /** Methods for Table */
     getDDL(table) {
         let numbers = ["int", "integer"];
         let columns = [];
         let foreigns = [];
         let primary;
-        let autoIncrement = "";
+        let autoIncrement;
         for (let key in table.schema) {
             let field = table.schema[key];
             if (field.primary && field.autoIncrement) {
@@ -134,7 +129,8 @@ class MysqlAdapter extends modelar_1.Adapter {
             sql += " engine=Aria transactional=1";
         else
             sql += " engine=InnoDB";
-        return sql + ` default charset=${table.config.charset}` + autoIncrement;
+        sql += ` default charset=${table.config.charset}`;
+        return autoIncrement ? sql + autoIncrement : sql;
     }
     random(query) {
         query["_orderBy"] = "rand()";
@@ -143,3 +139,4 @@ class MysqlAdapter extends modelar_1.Adapter {
 }
 MysqlAdapter.Pools = {};
 exports.MysqlAdapter = MysqlAdapter;
+//# sourceMappingURL=index.js.map

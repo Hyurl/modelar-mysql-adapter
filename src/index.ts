@@ -87,7 +87,7 @@ export class MysqlAdapter extends Adapter {
         let columns: string[] = [];
         let foreigns: string[] = [];
         let primary: string;
-        let autoIncrement: string = "";
+        let autoIncrement: string;
 
         for (let key in table.schema) {
             let field = table.schema[key];
@@ -162,7 +162,9 @@ export class MysqlAdapter extends Adapter {
         else
             sql += " engine=InnoDB";
 
-        return sql + ` default charset=${table.config.charset}` + autoIncrement;
+        sql += ` default charset=${table.config.charset}`;
+
+        return autoIncrement ? sql + autoIncrement : sql;
     }
 
     random(query: Query): Query {
