@@ -78,7 +78,7 @@ class MysqlAdapter extends modelar_1.Adapter {
         let columns = [];
         let foreigns = [];
         let primary;
-        let autoIncrement;
+        let autoIncrement = "";
         for (let key in table.schema) {
             let field = table.schema[key];
             if (field.primary && field.autoIncrement) {

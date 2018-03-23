@@ -87,7 +87,7 @@ export class MysqlAdapter extends Adapter {
         let columns: string[] = [];
         let foreigns: string[] = [];
         let primary: string;
-        let autoIncrement: string;
+        let autoIncrement: string = "";
 
         for (let key in table.schema) {
             let field = table.schema[key];
