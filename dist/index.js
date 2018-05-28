@@ -1,43 +1,52 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const mysql_1 = require("mysql");
-const modelar_1 = require("modelar");
-class MysqlAdapter extends modelar_1.Adapter {
-    connect(db) {
+var tslib_1 = require("tslib");
+var mysql_1 = require("mysql");
+var assign = require("lodash/assign");
+var ModelarAdapter = require("modelar").Adapter;
+var MysqlAdapter = (function (_super) {
+    tslib_1.__extends(MysqlAdapter, _super);
+    function MysqlAdapter() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    MysqlAdapter.prototype.connect = function (db) {
+        var _this = this;
         var dsn = db.dsn, config = db.config;
         if (MysqlAdapter.Pools[dsn] === undefined) {
-            let _config = Object.assign({}, config);
+            var _config = assign({}, config);
             _config.connectionLimit = config.max;
             MysqlAdapter.Pools[dsn] = mysql_1.createPool(_config);
         }
-        return new Promise((resolve, reject) => {
-            MysqlAdapter.Pools[dsn].getConnection((err, connection) => {
+        return new Promise(function (resolve, reject) {
+            MysqlAdapter.Pools[dsn].getConnection(function (err, connection) {
                 if (err) {
                     reject(err);
                 }
                 else {
-                    this.connection = connection;
+                    _this.connection = connection;
                     resolve(db);
                 }
             });
         });
-    }
-    query(db, sql, bindings) {
-        return new Promise((resolve, reject) => {
-            let options = {
+    };
+    MysqlAdapter.prototype.query = function (db, sql, bindings) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var options = {
                 sql: sql,
                 values: bindings,
                 timeout: db.config.timeout,
             };
-            this.connection.query(options, (err, res) => {
+            _this.connection.query(options, function (err, res) {
                 if (err) {
                     reject(err);
                 }
                 else {
                     if (res instanceof Array) {
-                        let data = [];
-                        for (let row of res) {
-                            data.push(Object.assign({}, row));
+                        var data = [];
+                        for (var _i = 0, res_1 = res; _i < res_1.length; _i++) {
+                            var row = res_1[_i];
+                            data.push(assign({}, row));
                         }
                         db.data = data;
                     }
@@ -49,35 +58,35 @@ class MysqlAdapter extends modelar_1.Adapter {
                 }
             });
         });
-    }
-    release() {
+    };
+    MysqlAdapter.prototype.release = function () {
         if (this.connection) {
             this.connection.release();
             this.connection = null;
         }
-    }
-    close() {
+    };
+    MysqlAdapter.prototype.close = function () {
         if (this.connection) {
             this.connection.destroy();
             this.connection = null;
         }
-    }
-    static close() {
-        for (let i in MysqlAdapter.Pools) {
+    };
+    MysqlAdapter.close = function () {
+        for (var i in MysqlAdapter.Pools) {
             MysqlAdapter.Pools[i].end();
             delete MysqlAdapter.Pools[i];
         }
-    }
-    getDDL(table) {
-        let numbers = ["int", "integer"];
-        let columns = [];
-        let foreigns = [];
-        let primary;
-        let autoIncrement;
-        for (let key in table.schema) {
-            let field = table.schema[key];
+    };
+    MysqlAdapter.prototype.getDDL = function (table) {
+        var numbers = ["int", "integer"];
+        var columns = [];
+        var foreigns = [];
+        var primary;
+        var autoIncrement;
+        for (var key in table.schema) {
+            var field = table.schema[key];
             if (field.primary && field.autoIncrement) {
-                if (!numbers.includes(field.type.toLowerCase())) {
+                if (numbers.indexOf(field.type.toLowerCase()) === -1) {
                     field.type = "int";
                     if (!field.length)
                         field.length = 10;
@@ -90,7 +99,7 @@ class MysqlAdapter extends modelar_1.Adapter {
             else if (field.length) {
                 field.type += "(" + field.length + ")";
             }
-            let column = table.backquote(field.name) + " " + field.type;
+            var column = table.backquote(field.name) + " " + field.type;
             if (field.primary)
                 primary = field.name;
             if (field.autoIncrement)
@@ -108,7 +117,7 @@ class MysqlAdapter extends modelar_1.Adapter {
             if (field.comment)
                 column += " comment " + table.quote(field.comment);
             if (field.foreignKey.table) {
-                let foreign = `foreign key (${table.backquote(field.name)})` +
+                var foreign = "foreign key (" + table.backquote(field.name) + ")" +
                     " references " + table.backquote(field.foreignKey.table) +
                     " (" + table.backquote(field.foreignKey.field) + ")" +
                     " on delete " + field.foreignKey.onDelete +
@@ -118,7 +127,7 @@ class MysqlAdapter extends modelar_1.Adapter {
             ;
             columns.push(column);
         }
-        let sql = "create table " + table.backquote(table.name) +
+        var sql = "create table " + table.backquote(table.name) +
             " (\n\t" + columns.join(",\n\t");
         if (primary)
             sql += ",\n\tprimary key(" + table.backquote(primary) + ")";
@@ -129,14 +138,15 @@ class MysqlAdapter extends modelar_1.Adapter {
             sql += " engine=Aria transactional=1";
         else
             sql += " engine=InnoDB";
-        sql += ` default charset=${table.config.charset}`;
+        sql += " default charset=" + table.config.charset;
         return autoIncrement ? sql + autoIncrement : sql;
-    }
-    random(query) {
+    };
+    MysqlAdapter.prototype.random = function (query) {
         query["_orderBy"] = "rand()";
         return query;
-    }
-}
-MysqlAdapter.Pools = {};
+    };
+    MysqlAdapter.Pools = {};
+    return MysqlAdapter;
+}(ModelarAdapter));
 exports.MysqlAdapter = MysqlAdapter;
 //# sourceMappingURL=index.js.map

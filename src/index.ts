@@ -1,7 +1,10 @@
-import { createPool, Pool, PoolConnection, QueryOptions } from "mysql";
+import { createPool, Pool, PoolConnection } from "mysql";
 import { Adapter, DB, Query, Table } from "modelar";
+import assign = require("lodash/assign");
 
-export class MysqlAdapter extends Adapter {
+const ModelarAdapter: typeof Adapter = require("modelar").Adapter;
+
+export class MysqlAdapter extends ModelarAdapter {
     connection: PoolConnection;
 
     static Pools: { [dsn: string]: Pool } = {};
@@ -11,7 +14,7 @@ export class MysqlAdapter extends Adapter {
             config = db.config;
 
         if (MysqlAdapter.Pools[dsn] === undefined) {
-            let _config = <any>Object.assign({}, config);
+            let _config = <any>assign({}, config);
             _config.connectionLimit = config.max;
             MysqlAdapter.Pools[dsn] = createPool(_config);
         }
@@ -44,7 +47,7 @@ export class MysqlAdapter extends Adapter {
                         // returns an array.
                         let data = [];
                         for (let row of res) {
-                            data.push(Object.assign({}, row));
+                            data.push(assign({}, row));
                         }
                         db.data = data;
                     } else {
@@ -93,7 +96,7 @@ export class MysqlAdapter extends Adapter {
             let field = table.schema[key];
 
             if (field.primary && field.autoIncrement) {
-                if (!numbers.includes(field.type.toLowerCase())) {
+                if (numbers.indexOf(field.type.toLowerCase()) === -1) {
                     field.type = "int";
                     if (!field.length)
                         field.length = 10;

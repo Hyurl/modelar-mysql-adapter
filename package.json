@@ -1,6 +1,6 @@
 {
     "name": "modelar-mysql-adapter",
-    "version": "3.0.2",
+    "version": "3.0.3",
     "description": "An adapter for Modelar to connect MySQL/Maria database.",
     "main": "dist/index.js",
     "types": "src/index.ts",
@@ -23,7 +23,10 @@
     },
     "license": "MIT",
     "dependencies": {
+        "@types/lodash": "^4.14.109",
         "@types/mysql": "^2.15.2",
-        "mysql": "^2.15.0"
+        "lodash": "^4.17.10",
+        "mysql": "^2.15.0",
+        "tslib": "^1.9.1"
     }
 }

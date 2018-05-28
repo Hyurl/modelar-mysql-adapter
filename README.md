@@ -6,6 +6,10 @@
 (This module is internally included by Modelar, you don't have to download it
 before using it.)
 
+## Prerequisites
+
+- `NodeJS` version higher than 4.0.0.
+
 ## How To Use
 
 ```javascript
