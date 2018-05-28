@@ -99,35 +99,37 @@ var MysqlAdapter = (function (_super) {
                 }
                 autoIncrement = " auto_increment=" + field.autoIncrement[0];
             }
+            var type = field.type;
             if (field.length instanceof Array) {
-                field.type += "(" + field.length.join(",") + ")";
+                type += "(" + field.length.join(",") + ")";
             }
             else if (field.length) {
-                field.type += "(" + field.length + ")";
+                type += "(" + field.length + ")";
             }
-            var column = table.backquote(field.name) + " " + field.type;
+            var column = table.backquote(field.name) + " " + type;
             if (field.primary)
                 primary = field.name;
             if (field.autoIncrement)
                 column += " auto_increment";
+            if (field.unique)
+                column += " unique";
+            if (field.unsigned)
+                column += " unsigned";
+            if (field.notNull)
+                column += " not null";
             if (field.default === null)
                 column += " default null";
             else if (field.default !== undefined)
                 column += " default " + table.quote(field.default);
-            if (field.notNull)
-                column += " not null";
-            if (field.unsigned)
-                column += " unsigned";
-            if (field.unique)
-                column += " unique";
             if (field.comment)
                 column += " comment " + table.quote(field.comment);
             if (field.foreignKey && field.foreignKey.table) {
-                var foreign = "foreign key (" + table.backquote(field.name) + ")" +
-                    " references " + table.backquote(field.foreignKey.table) +
-                    " (" + table.backquote(field.foreignKey.field) + ")" +
-                    " on delete " + field.foreignKey.onDelete +
-                    " on update " + field.foreignKey.onUpdate;
+                var foreign = "constraint " + table.backquote(field.name)
+                    + (" foreign key (" + table.backquote(field.name) + ")")
+                    + " references " + table.backquote(field.foreignKey.table)
+                    + " (" + table.backquote(field.foreignKey.field) + ")"
+                    + " on delete " + field.foreignKey.onDelete
+                    + " on update " + field.foreignKey.onUpdate;
                 foreigns.push(foreign);
             }
             ;
@@ -136,7 +138,7 @@ var MysqlAdapter = (function (_super) {
         var sql = "create table " + table.backquote(table.name) +
             " (\n\t" + columns.join(",\n\t");
         if (primary)
-            sql += ",\n\tprimary key(" + table.backquote(primary) + ")";
+            sql += ",\n\tprimary key (" + table.backquote(primary) + ")";
         if (foreigns.length)
             sql += ",\n\t" + foreigns.join(",\n\t");
         sql += "\n)";

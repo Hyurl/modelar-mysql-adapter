@@ -1,6 +1,6 @@
 {
     "name": "modelar-mysql-adapter",
-    "version": "3.0.5",
+    "version": "3.0.6",
     "description": "An adapter for Modelar to connect MySQL/Maria database.",
     "main": "dist/index.js",
     "types": "src/index.ts",

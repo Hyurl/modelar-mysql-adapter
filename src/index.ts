@@ -5,7 +5,7 @@ import assign = require("lodash/assign");
 var ModelarAdapter: typeof Adapter;
 try {
     ModelarAdapter = require("modelar").Adapter;
-} catch (err){
+} catch (err) {
     // for travis-ci tests.
     ModelarAdapter = require("../../../").Adapter;
 }
@@ -100,7 +100,6 @@ export class MysqlAdapter extends ModelarAdapter {
 
         for (let key in table.schema) {
             let field = table.schema[key];
-
             if (field.primary && field.autoIncrement) {
                 if (numbers.indexOf(field.type.toLowerCase()) === -1) {
                     field.type = "int";
@@ -111,13 +110,14 @@ export class MysqlAdapter extends ModelarAdapter {
                 autoIncrement = " auto_increment=" + field.autoIncrement[0];
             }
 
+            let type = field.type;
             if (field.length instanceof Array) {
-                field.type += "(" + field.length.join(",") + ")";
+                type += "(" + field.length.join(",") + ")";
             } else if (field.length) {
-                field.type += "(" + field.length + ")";
+                type += "(" + field.length + ")";
             }
 
-            let column = table.backquote(field.name) + " " + field.type;
+            let column = table.backquote(field.name) + " " + type;
 
             if (field.primary)
                 primary = field.name;
@@ -125,29 +125,30 @@ export class MysqlAdapter extends ModelarAdapter {
             if (field.autoIncrement)
                 column += " auto_increment";
 
+            if (field.unique)
+                column += " unique";
+
+            if (field.unsigned)
+                column += " unsigned";
+
+            if (field.notNull)
+                column += " not null";
+
             if (field.default === null)
                 column += " default null";
             else if (field.default !== undefined)
                 column += " default " + table.quote(field.default);
 
-            if (field.notNull)
-                column += " not null";
-
-            if (field.unsigned)
-                column += " unsigned";
-
-            if (field.unique)
-                column += " unique";
-
             if (field.comment)
                 column += " comment " + table.quote(field.comment);
 
             if (field.foreignKey && field.foreignKey.table) {
-                let foreign = `foreign key (${table.backquote(field.name)})` +
-                    " references " + table.backquote(field.foreignKey.table) +
-                    " (" + table.backquote(field.foreignKey.field) + ")" +
-                    " on delete " + field.foreignKey.onDelete +
-                    " on update " + field.foreignKey.onUpdate;
+                let foreign = "constraint " + table.backquote(field.name)
+                    + ` foreign key (${table.backquote(field.name)})`
+                    + " references " + table.backquote(field.foreignKey.table)
+                    + " (" + table.backquote(field.foreignKey.field) + ")"
+                    + " on delete " + field.foreignKey.onDelete
+                    + " on update " + field.foreignKey.onUpdate;
 
                 foreigns.push(foreign);
             };
@@ -159,7 +160,7 @@ export class MysqlAdapter extends ModelarAdapter {
             " (\n\t" + columns.join(",\n\t");
 
         if (primary)
-            sql += ",\n\tprimary key(" + table.backquote(primary) + ")";
+            sql += ",\n\tprimary key (" + table.backquote(primary) + ")";
 
         if (foreigns.length)
             sql += ",\n\t" + foreigns.join(",\n\t");
