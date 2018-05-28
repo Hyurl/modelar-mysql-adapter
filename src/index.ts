@@ -2,7 +2,13 @@ import { createPool, Pool, PoolConnection } from "mysql";
 import { Adapter, DB, Query, Table } from "modelar";
 import assign = require("lodash/assign");
 
-const ModelarAdapter: typeof Adapter = require("modelar").Adapter;
+var ModelarAdapter: typeof Adapter;
+try {
+    ModelarAdapter = require("modelar").Adapter;
+} catch (err){
+    // for travis-ci tests.
+    ModelarAdapter = require("../../../").Adapter;
+}
 
 export class MysqlAdapter extends ModelarAdapter {
     connection: PoolConnection;

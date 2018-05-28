@@ -3,7 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var mysql_1 = require("mysql");
 var assign = require("lodash/assign");
-var ModelarAdapter = require("modelar").Adapter;
+var ModelarAdapter;
+try {
+    ModelarAdapter = require("modelar").Adapter;
+}
+catch (err) {
+    ModelarAdapter = require("../../../").Adapter;
+}
 var MysqlAdapter = (function (_super) {
     tslib_1.__extends(MysqlAdapter, _super);
     function MysqlAdapter() {
