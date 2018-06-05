@@ -24,6 +24,12 @@ DB.init({
     password: "******"
 });
 ```
+## A Tip
 
-When connect to MySQL, uses `InnoDB` as engine; when connect to MariaDB, uses 
-`Aria` as engine; transactions are always enabled.
+When connecting to MySQL, uses `InnoDB` as engine; when connecting to MariaDB, 
+uses `Aria` as engine; transactions are always enabled.
+
+## How To Test
+
+This module is internally included by Modelar, so are the tests, you should 
+test Modelar instead (if you are going to).
